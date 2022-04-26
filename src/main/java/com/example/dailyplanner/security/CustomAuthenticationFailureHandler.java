@@ -1,4 +1,4 @@
-package com.example.dailyplanner.handler;
+package com.example.dailyplanner.security;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;

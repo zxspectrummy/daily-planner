@@ -1,20 +1,29 @@
 package com.example.dailyplanner.controller;
 
 import com.example.dailyplanner.model.Task;
+import com.example.dailyplanner.model.User;
+import com.example.dailyplanner.repository.UserRepository;
+import com.example.dailyplanner.security.AuthenticatedUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,9 +42,30 @@ public class TaskControllerTest {
     private MockMvc mvc;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
+    @MockBean
+    SecurityContext securityContext;
+
+    User testUser;
+
+    @BeforeEach
+    public void setup() {
+        User user = User.builder().username("admin").password("setup").id(1L).build();
+        AuthenticatedUser applicationUser = new AuthenticatedUser(user);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(authentication.getPrincipal()).thenReturn(applicationUser);
+        testUser = userRepository.save(user);
+    }
+
     @Test
+    @WithMockUser(username = "admin")
     public void createTask() throws Exception {
         createRandomTasks(1);
     }
@@ -89,20 +119,23 @@ public class TaskControllerTest {
 
     @Test
     public void markAsDone() throws Exception {
-        Task task = createRandomTasks(1).get(0);
-        task.setDone(true);
-        String taskEndpoint = String.format("/tasks/%d", task.getId());
+        Task savedTask = createRandomTasks(1).get(0);
+        String taskEndpoint = String.format("/tasks/%d", savedTask.getId());
         mvc.perform(MockMvcRequestBuilders.patch(taskEndpoint))
                 .andExpect(status().isOk())
                 .andDo(result -> mvc.perform(MockMvcRequestBuilders.get(taskEndpoint))
-                        .andExpect(content().string(equalTo(objectMapper.writeValueAsString(task)))));
+                        .andExpect(content().string(equalTo(objectMapper.writeValueAsString(savedTask.toBuilder().done(true).build())))));
     }
 
     private List<Task> createRandomTasks(int taskCount) throws Exception {
         List<Task> createdTasks = new ArrayList<>();
         for (int i = 0; i < taskCount; i++) {
-            LocalDate randomDate = getRandomLocalDate();
-            final Task task = new Task(randomDate, getRandomString(10));
+            Task task = Task.builder()
+                    .date(getRandomLocalDate())
+                    .description(getRandomString(10))
+                    .done(false)
+                    .user(testUser)
+                    .build();
             final String expectedResponseContent = objectMapper.writeValueAsString(task);
             mvc.perform(MockMvcRequestBuilders.post("/tasks").content(expectedResponseContent)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -117,6 +150,7 @@ public class TaskControllerTest {
                                         .accept(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
                                 .andExpect(content().string(equalTo(objectMapper.writeValueAsString(createdTask))));
+                        createdTask.setUser(testUser);
                         createdTasks.add(createdTask);
                     });
         }

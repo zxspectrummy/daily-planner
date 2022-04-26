@@ -1,4 +1,4 @@
-package com.example.dailyplanner.handler;
+package com.example.dailyplanner.security;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;

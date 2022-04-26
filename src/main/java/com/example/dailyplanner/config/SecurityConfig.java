@@ -1,7 +1,7 @@
 package com.example.dailyplanner.config;
 
-import com.example.dailyplanner.handler.CustomAuthenticationFailureHandler;
-import com.example.dailyplanner.handler.CustomAuthenticationSuccessHandler;
+import com.example.dailyplanner.security.CustomAuthenticationFailureHandler;
+import com.example.dailyplanner.security.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

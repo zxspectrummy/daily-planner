@@ -20,8 +20,9 @@ public class UserController {
         return userService.getById(id);
     }
 
-    @GetMapping("/users/me")
-    public User getCurrentUser() throws ResourceNotFoundException {
-        return userService.getCurrentUser();
-    }
+//    @GetMapping("/users/me")
+//    public User getCurrentUser() throws ResourceNotFoundException {
+//        return userService.getCurrentUser();
+//    }
+
 }

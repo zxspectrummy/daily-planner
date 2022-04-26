@@ -32,7 +32,7 @@ public class UserControllerTest {
 
     @Test
     public void createUser() throws Exception {
-        final User user = new User("admin", "setup");
+        User user = User.builder().username("admin").password("setup").id(1l).build();
         final String expectedResponseContent = objectMapper.writeValueAsString(user);
         mvc.perform(MockMvcRequestBuilders.post("/users").content(expectedResponseContent)
                         .contentType(MediaType.APPLICATION_JSON)
