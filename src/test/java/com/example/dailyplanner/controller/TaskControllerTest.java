@@ -20,11 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.example.dailyplanner.TestUtils.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TaskControllerTest {
     private static final int TASK_COUNT = 3;
@@ -117,9 +118,7 @@ public class TaskControllerTest {
                                 .andExpect(status().isOk())
                                 .andExpect(content().string(equalTo(objectMapper.writeValueAsString(createdTask))));
                         createdTasks.add(createdTask);
-                        ;
                     });
-            ;
         }
         return createdTasks;
     }

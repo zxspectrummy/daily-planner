@@ -1,10 +1,10 @@
 package com.example.dailyplanner.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +22,9 @@ public class Task {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @NonNull private LocalDate date;
-    @NonNull private String description;
+    @NonNull
+    private LocalDate date;
+    @NonNull
+    private String description;
     private boolean done;
 }
