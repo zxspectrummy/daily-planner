@@ -31,13 +31,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveOrUpdate(User user) throws Exception {
+    public User saveOrUpdate(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     @Override
-    public void delete(long id) throws Exception {
+    public void delete(long id) {
         userRepository.deleteById(id);
     }
 

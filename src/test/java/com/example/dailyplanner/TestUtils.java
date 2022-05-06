@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TestUtils {
-    public static <T>  Object convertJSONStringToObject(String json, Class<T> objectClass) throws IOException {
+    public static <T> Object convertJSONStringToObject(String json, Class<T> objectClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         JavaTimeModule module = new JavaTimeModule();

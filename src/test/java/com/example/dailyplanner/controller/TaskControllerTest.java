@@ -80,7 +80,7 @@ public class TaskControllerTest {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
-        mvc.perform(MockMvcRequestBuilders.get("/tasks"))
+        mvc.perform(MockMvcRequestBuilders.get("/api/tasks"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(TASK_COUNT)))
@@ -90,10 +90,10 @@ public class TaskControllerTest {
     @Test
     public void deleteTask() throws Exception {
         List<Task> tasks = createRandomTasks(TASK_COUNT);
-        String taskEndpoint = String.format("/tasks/%d", tasks.get(0).getId());
+        String taskEndpoint = String.format("/api/tasks/%d", tasks.get(0).getId());
         mvc.perform(MockMvcRequestBuilders.delete(taskEndpoint))
                 .andExpect(status().isOk());
-        mvc.perform(MockMvcRequestBuilders.get("/tasks"))
+        mvc.perform(MockMvcRequestBuilders.get("/api/tasks"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(TASK_COUNT - 1)));
@@ -104,7 +104,7 @@ public class TaskControllerTest {
     @Test
     public void updateTask() throws Exception {
         List<Task> tasks = createRandomTasks(TASK_COUNT);
-        String taskEndpoint = String.format("/tasks/%d", tasks.get(0).getId());
+        String taskEndpoint = String.format("/api/tasks/%d", tasks.get(0).getId());
         Task updatedTask = tasks.get(0);
         updatedTask.setDescription("updated description");
         mvc.perform(MockMvcRequestBuilders.put(taskEndpoint).content(objectMapper.writeValueAsString(tasks.get(0)))
@@ -120,7 +120,7 @@ public class TaskControllerTest {
     @Test
     public void markAsDone() throws Exception {
         Task savedTask = createRandomTasks(1).get(0);
-        String taskEndpoint = String.format("/tasks/%d", savedTask.getId());
+        String taskEndpoint = String.format("/api/tasks/%d", savedTask.getId());
         mvc.perform(MockMvcRequestBuilders.patch(taskEndpoint))
                 .andExpect(status().isOk())
                 .andDo(result -> mvc.perform(MockMvcRequestBuilders.get(taskEndpoint))
@@ -137,7 +137,7 @@ public class TaskControllerTest {
                     .user(testUser)
                     .build();
             final String expectedResponseContent = objectMapper.writeValueAsString(task);
-            mvc.perform(MockMvcRequestBuilders.post("/tasks").content(expectedResponseContent)
+            mvc.perform(MockMvcRequestBuilders.post("/api/tasks").content(expectedResponseContent)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -146,7 +146,7 @@ public class TaskControllerTest {
                     .andDo(createResult -> {
                         String json = createResult.getResponse().getContentAsString();
                         Task createdTask = (Task) convertJSONStringToObject(json, Task.class);
-                        mvc.perform(MockMvcRequestBuilders.get(String.format("/tasks/%d", createdTask.getId()))
+                        mvc.perform(MockMvcRequestBuilders.get(String.format("/api/tasks/%d", createdTask.getId()))
                                         .accept(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
                                 .andExpect(content().string(equalTo(objectMapper.writeValueAsString(createdTask))));

@@ -15,3 +15,8 @@ flyway:
   enabled: true
   locations:
     - 'classpath:db/migration'
+
+app:
+  jwtSecret: secretKey
+  jwtExpirationMs: 86400000
+

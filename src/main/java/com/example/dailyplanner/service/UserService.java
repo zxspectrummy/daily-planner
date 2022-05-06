@@ -9,9 +9,9 @@ public interface UserService {
 
     User getById(long id);
 
-    User saveOrUpdate(User user) throws Exception;
+    User saveOrUpdate(User user);
 
-    void delete(long id) throws Exception;
+    void delete(long id);
 
     User getCurrentUser();
 }
